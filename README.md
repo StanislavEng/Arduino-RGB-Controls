@@ -13,16 +13,16 @@ create a dedicated repository and make more versions.
 
 Version 1: Standard (in Serial atm) user input and printed values. Uses linked lists for finding
 desired colors, as well as the option to change RGB values by the color in +/-63 bit values. 
-TODO?: Lower the change value for more precise changing
-TODO: Add in loop to allow you to change values until you're happy with it without starting from top
-TODO: Add in TO END feature for RGB to go from 0 to 255 or vice versa immediately 
+\nTODO?: Lower the change value for more precise changing
+\nTODO: Add in loop to allow you to change values until you're happy with it without starting from top
+\nTODO: Add in TO END feature for RGB to go from 0 to 255 or vice versa immediately 
 
 Version 2: Adding potentiometer for more precise control of RGB values 
-TODO: Add in pot ;) 
+\nTODO: Add in pot ;) 
 
 Version 3: Adding in DIPSWITCH or something to switch from dev mode to user mode, as well as use other
 buttons to switch between changing R,G or B values. 
-TODO: start it
+\nTODO: start it
 
 
 
