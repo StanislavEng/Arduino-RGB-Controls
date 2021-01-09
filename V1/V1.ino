@@ -55,9 +55,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   j = 1;
   
-  Serial.println(msg);
+  Serial.println(msg); // Main Menu Message basically 
   colptr iter = head;
-  Serial.println(msg0);
+  Serial.println(msg0); // Skip option
   while(iter != NULL){
     Serial.print(j);
     Serial.print(F(". "));
@@ -82,11 +82,12 @@ void loop() {
     analogWrite(BLUEPWM,stateb);
   }
   else{
-    Serial.println(msgg);
+    do {
+    Serial.println(msgg); // This is it
     while(Serial.available()==0){
     }
     col = Serial.readString();
-  }
+
   if (col == "Red" || col == "red"){
     if ((stater == 0 || stater < 252) && dirr == true){
       stater = stater + incrm;
@@ -138,6 +139,7 @@ void loop() {
     }
     analogWrite(BLUEPWM,stateb);
   }
+    } while (!(col == "Yes") && !(col != "yes"));
   Serial.print("Red is : ");
   Serial.print(stater);
   Serial.print(". Green is : ");
@@ -177,6 +179,7 @@ void loop() {
     iter = temp;
   }
   delay(2*DELAYTIME);
+}
 }
 void debugMode(){
   colptr temp = head;
