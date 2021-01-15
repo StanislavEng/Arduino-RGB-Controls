@@ -51,7 +51,8 @@ void setup() {
   pinMode(BLUEPWM,OUTPUT);
   while (!Serial) {}
   initRGB();
-  checkEEPROM();
+  //checkEEPROM();
+  myEEPROM();
   j=0;
 }
 
@@ -169,6 +170,7 @@ void loop() {
       }while(!(col == "yes") && !(col == "YES") && !(col == "no") && !(col != "NO"));
       if(col == "yes" || col == "YES"){
         colptr temp = new coltyp;
+        coltyp tosave; 
         colptr iter = head;
         while (iter->fptr != NULL){
           iter = iter->fptr;
@@ -176,14 +178,26 @@ void loop() {
         Serial.println(msg2);
         while(Serial.available() == 0){
         }
-        temp->colName = Serial.readString();
-        temp->Rval = stater;
-        temp->Gval = stateg;
-        temp->Bval = stateb;
+        tosave.colName =  Serial.readString();
+        temp->colName = tosave.colName;
+        tosave.Rval = stater;
+        tosave.Gval = stateg;
+        tosave.Bval = stateb;
+        temp->Rval = tosave.Rval;
+        temp->Gval = tosave.Gval;
+        temp->Bval = tosave.Bval;
         temp->bptr = iter;
         iter->fptr = temp;
         iter = temp;
-        EEPROM.put(eeAddress,iter);
+        EEPROM.put(eeAddress,tosave);
+        //String tn = "Saved RGB";
+        //EEPROM.put(eeAddress,tn);
+        //eeAddress += sizeof(String);
+        //EEPROM.put(eeAddress,stater);
+        //eeAddress += sizeof(byte);
+        //EEPROM.put(eeAddress,stateg);
+        //eeAddress += sizeof(byte);
+        //EEPROM.put(eeAddress,stateb);
       }
       else{
         String tn = "Saved RGB";
@@ -206,7 +220,15 @@ void loop() {
     EEPROM.put(eeAddress,iter->Gval);
     eeAddress += sizeof(byte);
     EEPROM.put(eeAddress,iter->Bval);*/
-    //EEPROM.put(eeAddress,iter);
+    //EEPROM.put(eeAddress,);
+    String tn = "Saved RGB";
+    EEPROM.put(eeAddress,tn);
+    eeAddress += sizeof(String);
+    EEPROM.put(eeAddress,stater);
+    eeAddress += sizeof(byte);
+    EEPROM.put(eeAddress,stateg);
+    eeAddress += sizeof(byte);
+    EEPROM.put(eeAddress,stateb);
 }
 void debugMode(){
   colptr temp = head;
@@ -249,7 +271,7 @@ void initRGB(){
       iter = head;
     }
   }
-}
+}/*
 void checkEEPROM(){
   int ii = 0;
   //String testname;
@@ -258,12 +280,15 @@ void checkEEPROM(){
   if (test == 0){
     Serial.println("Right");
   }
-  else if((test->colName == "RED") || (test->colName == "GREEN") || (test->colName == "BLUE" || (test->colName =="Saved RGB")) ){
-    analogWrite(REDPWM,test->Rval);
-    analogWrite(GREENPWM,test->Gval);
-    analogWrite(BLUEPWM,test->Bval);
-    Serial.println("Wrong");
-  }
+  else {//if((test->colName.length() > 0) ){
+    byte red   = test->Rval;
+    byte green = test->Gval;
+    byte blue  = test->Bval;
+    analogWrite(REDPWM   , red);
+    analogWrite(GREENPWM , green);
+    analogWrite(BLUEPWM  , blue);
+    Serial.println("Worded reboot");
+  }/*
   else {
     colptr iter = head;
     while(iter->fptr != NULL){
@@ -271,10 +296,17 @@ void checkEEPROM(){
     }
     iter->fptr = test;
     test->bptr = iter;
-    iter = test;
-    analogWrite(REDPWM,test->Rval);
-    analogWrite(GREENPWM,test->Gval);
-    analogWrite(BLUEPWM,test->Bval);
+    analogWrite(REDPWM   ,test->Rval);
+    analogWrite(GREENPWM ,test->Gval);
+    analogWrite(BLUEPWM  ,test->Bval);
     Serial.println("def wrong");
   }
+}*/
+void myEEPROM(){
+  coltyp test;
+  EEPROM.get(0,test);
+  Serial.println(test.colName);
+  Serial.println(test.Rval);
+  Serial.println(test.Gval);
+  Serial.println(test.Bval);
 }
