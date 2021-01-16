@@ -34,6 +34,6 @@ TODO: start it
 
 TODO: Create some sort of scrolling feature to reduce how many get shown at a time for better
 legibility. \
-TODO: Add in EEPROM writing to save data in case you reset Arduino\
+~TODO: Add in EEPROM writing to save data in case you reset Arduino~ got it\
 TODO?: Some sort of output such as LCD screens so you don't need to use Arduino IDE(?) Serial\
 LOOKAT: Seeing if I can find some sort of lower tech way or something to save RGB values without EEPROM
