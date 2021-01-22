@@ -12,13 +12,16 @@
 #define hi 252
 #define lo 0
 
+#define MAXSIZE 10
+
 struct coltyp{
-  String colName = "";
+  char colName[MAXSIZE];
   byte Rval=lo;
   byte Gval=lo;
   byte Bval=lo;
   coltyp* fptr = NULL;
   coltyp* bptr = NULL;
+  int len;
 };
 typedef coltyp* colptr;
 
@@ -32,7 +35,7 @@ String msg1 = "Do you want to save this colour?";
 String msg2 = "What is the name of this colour?";
 String msg3 = "Entering debug mode";
 String msg4 = "Not a valid entry";
-String col;
+char col[10];
 int stater = 0;
 
 int stateg = 0;
@@ -42,6 +45,7 @@ bool dirg = true;
 bool dirb = true;
 int incrm = 63;
 int j=0;
+int selsize;
 
 void setup() {
   // put your setup code here, to run once:
@@ -52,7 +56,7 @@ void setup() {
   while (!Serial) {}
   initRGB();
   //checkEEPROM();
-  myEEPROM();
+  //myEEPROM();
   j=0;
 }
 
@@ -73,10 +77,12 @@ void loop() {
     j++;
   }
   iter = head;
-  while(Serial.available()==0){
+/*
+  while(rep == false){
+    while(Serial.available()==0){}
+    readinput();
   }
-  col = Serial.readString();
- 
+
   while (iter != NULL && iter->colName != col){
     iter = iter->fptr;
   }
@@ -92,10 +98,10 @@ void loop() {
   else{
     do {
       Serial.println(msgg); // This is it
-      while(Serial.available()==0){
-      }
-      col = Serial.readString();
-  
+      while(Serial.available()==0){}
+      
+      readinput();
+      
       if (col == "Red" || col == "red"){
         if ((stater == 0 || stater < 252) && dirr == true){
           stater = stater + incrm;
@@ -159,14 +165,9 @@ void loop() {
         if (rep == true){
           Serial.println(msg4);
         }
-        while(Serial.available()==0){
-        }
-        col = Serial.readString();
+        while(Serial.available()==0){}
+        readinput();
         rep = true;
-        Serial.println(col);
-        if (col == "no"){
-          Serial.println("This should work");
-        }
       }while(!(col == "yes") && !(col == "YES") && !(col == "no") && !(col != "NO"));
       if(col == "yes" || col == "YES"){
         colptr temp = new coltyp;
@@ -176,10 +177,19 @@ void loop() {
           iter = iter->fptr;
         }
         Serial.println(msg2);
-        while(Serial.available() == 0){
+        while(Serial.available() == 0){}
+        selsize = Serial.available();
+        if (selsize > MAXSIZE){
+          for (int ii = 0; ii <= selsize; ii++){
+              tosave.colName[ii] = Serial.read();
+              temp->colName[ii] = tosave.colName[ii];
+          }
         }
-        tosave.colName =  Serial.readString();
-        temp->colName = tosave.colName;
+        else{
+          Serial.println(F("That was not a valid choice"));
+        }
+        //tosave.colName =  col;
+        //temp->colName = tosave.colName;
         tosave.Rval = stater;
         tosave.Gval = stateg;
         tosave.Bval = stateb;
@@ -189,46 +199,13 @@ void loop() {
         temp->bptr = iter;
         iter->fptr = temp;
         iter = temp;
-        EEPROM.put(eeAddress,tosave);
-        //String tn = "Saved RGB";
-        //EEPROM.put(eeAddress,tn);
-        //eeAddress += sizeof(String);
-        //EEPROM.put(eeAddress,stater);
-        //eeAddress += sizeof(byte);
-        //EEPROM.put(eeAddress,stateg);
-        //eeAddress += sizeof(byte);
-        //EEPROM.put(eeAddress,stateb);
       }
       else{
-        String tn = "Saved RGB";
-        EEPROM.put(eeAddress,tn);
-        eeAddress += sizeof(String);
-        EEPROM.put(eeAddress,stater);
-        eeAddress += sizeof(byte);
-        EEPROM.put(eeAddress,stateg);
-        eeAddress += sizeof(byte);
-        EEPROM.put(eeAddress,stateb);
       }
       delay(2*DELAYTIME);
   }
-    // Saves last state to EEPROM memory 
-    /*
-    EEPROM.put(eeAddress,iter->colName);
-    eeAddress += sizeof(String);
-    EEPROM.put(eeAddress,iter->Rval);
-    eeAddress += sizeof(byte);
-    EEPROM.put(eeAddress,iter->Gval);
-    eeAddress += sizeof(byte);
-    EEPROM.put(eeAddress,iter->Bval);*/
-    //EEPROM.put(eeAddress,);
-    String tn = "Saved RGB";
-    EEPROM.put(eeAddress,tn);
-    eeAddress += sizeof(String);
-    EEPROM.put(eeAddress,stater);
-    eeAddress += sizeof(byte);
-    EEPROM.put(eeAddress,stateg);
-    eeAddress += sizeof(byte);
-    EEPROM.put(eeAddress,stateb);
+    Serial.println("Worked");
+*/
 }
 void debugMode(){
   colptr temp = head;
@@ -242,26 +219,47 @@ void debugMode(){
   }
 }
 
-void initRGB(){
+void readinput(){
+  selsize = Serial.available();
+  if (selsize > MAXSIZE){
+    for (int ii = 0; ii <= selsize; ii++) {
+        col[ii] = Serial.read();
+    }
+  }
+  else{
+    Serial.println(F("That was not a valid choice"));
+  }
+}
 
-  String colo[] = {"RED","GREEN","BLUE"};
-  for (int j = 0; j < 3; j++){
+void initRGB(){
+  Serial.println("Hello");
+  char colo[3][10] = {"RED","GREEN","BLUE"};
+  for (int jj = 0; jj < 3; jj++){
     colptr iter = head;
     while(iter->fptr != NULL){
       iter = iter->fptr;
+      Serial.println("Skip first");
     }
     colptr temp = new coltyp;
-    temp->colName = colo[j];
+    //int kk = 0;
+    delay(50);
+    for (int kk = 0; kk < 5; kk++){ 
+      temp->colName[kk] = colo[jj][kk];
+      Serial.println(temp->colName[kk]);
+    }
     if(j == 0){
       temp->Rval = hi;
+      temp->len  = 3;
     }
-    else if (j == 1){
+    else if (jj == 1){
       temp->Gval = hi;
+      temp->len  = 5;
     }
     else {
       temp->Bval = hi;
+      temp->len  = 4;
     }
-    if(j > 0){
+    if(jj > 0){
       iter->fptr = temp;
       temp->bptr = iter;
       iter = temp;
@@ -271,6 +269,7 @@ void initRGB(){
       iter = head;
     }
   }
+  delay(5000);
 }/*
 void checkEEPROM(){
   int ii = 0;
@@ -302,11 +301,14 @@ void checkEEPROM(){
     Serial.println("def wrong");
   }
 }*/
+/*
 void myEEPROM(){
   coltyp test;
   EEPROM.get(0,test);
+  delay(500);
   Serial.println(test.colName);
   Serial.println(test.Rval);
   Serial.println(test.Gval);
   Serial.println(test.Bval);
-}
+  //return;
+}*/
