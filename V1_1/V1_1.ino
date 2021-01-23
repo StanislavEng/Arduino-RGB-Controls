@@ -57,7 +57,6 @@ void setup() {
   initRGB();
   //checkEEPROM();
   //myEEPROM();
-  j=0;
 }
 
 void loop() {
@@ -65,7 +64,7 @@ void loop() {
   bool rep = false;
   // put your main code here, to run repeatedly:
   j = 1;
-  
+  //debugMode();
   Serial.println(msg); // Main Menu Message basically 
   colptr iter = head;
   Serial.println(msg0); // Skip option
@@ -77,17 +76,22 @@ void loop() {
     j++;
   }
   iter = head;
-/*
+
   while(rep == false){
     while(Serial.available()==0){}
-    readinput();
+    delay(50);
+    rep = readinput();
   }
+  rep = false;
 
-  while (iter != NULL && iter->colName != col){
+  while (iter != NULL && !(strcmp(iter->colName,col)==0)){
     iter = iter->fptr;
+    //Serial.println(iter->colName);
+    //Serial.println(col);
+    delay(200);
   }
   
-  if(iter->colName == col){
+  if((strcmp(iter->colName,col)==0)){
     stater = iter->Rval;
     stateg = iter->Gval;    
     stateb = iter->Bval;
@@ -96,13 +100,17 @@ void loop() {
     analogWrite(BLUEPWM,stateb);
   }
   else{
+    clr();
     do {
-      Serial.println(msgg); // This is it
-      while(Serial.available()==0){}
-      
-      readinput();
-      
-      if (col == "Red" || col == "red"){
+      Serial.println(msgg); // What RGB Value do you want
+      while(rep == false){
+        while(Serial.available()==0){}
+        delay(50);
+        rep = readinput();
+      }
+      Serial.println(col);
+      rep = false;
+      if ((strcmp(col,"Red")==0) || (strcmp(col,"red")==0)){
         if ((stater == 0 || stater < 252) && dirr == true){
           stater = stater + incrm;
         }
@@ -119,7 +127,7 @@ void loop() {
         }
         analogWrite(REDPWM,stater);
       }
-      if (col == "Green" || col == "green"){
+      if ((strcmp(col,"Green")==0) || (strcmp(col,"green")==0)){
         if (stateg < 252&& dirg == true){
           stateg = stateg + incrm;
         }
@@ -135,8 +143,8 @@ void loop() {
           stateg = stateg + incrm;
         }
         analogWrite(GREENPWM,stateg);
-      }
-      if (col == "Blue" || col == "blue"){
+       }
+      if ((strcmp(col,"Blue")==0) || (strcmp(col,"blue")==0)){
         if (stateb < 252 && dirb == true){
           stateb = stateb + incrm;
         }
@@ -153,40 +161,43 @@ void loop() {
         }
         analogWrite(BLUEPWM,stateb);
       }
-      } while (!(col == "Yes") && !(col != "yes"));
+      clr();
+      Serial.println(F("Are you happy with this color?"));
+      while(rep == false){
+        while(Serial.available()==0){}
+        delay(50);
+        rep = readinput();
+      }
+      rep = false;
+    } while (!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0));
+      clr();
       Serial.print("Red is : ");
       Serial.print(stater);
       Serial.print(". Green is : ");
       Serial.print(stateg);
       Serial.print(". Blue is : ");
       Serial.println(stateb);
-      Serial.println(msg1);
+      Serial.println(msg1); // DO you want to save this color
       do{
-        if (rep == true){
-          Serial.println(msg4);
+        while(rep == false){
+          while(Serial.available()==0){}
+          delay(50);
+          rep = readinput();
         }
-        while(Serial.available()==0){}
-        readinput();
-        rep = true;
-      }while(!(col == "yes") && !(col == "YES") && !(col == "no") && !(col != "NO"));
-      if(col == "yes" || col == "YES"){
+      }while(!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0) && !(strcmp(col,"No")==0) && !(strcmp(col,"no")==0));
+      if((strcmp(col,"Yes")==0) || (strcmp(col,"yes")==0)){
         colptr temp = new coltyp;
         coltyp tosave; 
         colptr iter = head;
         while (iter->fptr != NULL){
           iter = iter->fptr;
         }
-        Serial.println(msg2);
-        while(Serial.available() == 0){}
-        selsize = Serial.available();
-        if (selsize > MAXSIZE){
-          for (int ii = 0; ii <= selsize; ii++){
-              tosave.colName[ii] = Serial.read();
-              temp->colName[ii] = tosave.colName[ii];
-          }
-        }
-        else{
-          Serial.println(F("That was not a valid choice"));
+        clr();
+        Serial.println(msg2); // What is the name of this colour
+        while(rep == false){
+          while(Serial.available()==0){}
+          delay(50);
+          rep = readinput();
         }
         //tosave.colName =  col;
         //temp->colName = tosave.colName;
@@ -204,8 +215,7 @@ void loop() {
       }
       delay(2*DELAYTIME);
   }
-    Serial.println("Worked");
-*/
+    clr();
 }
 void debugMode(){
   colptr temp = head;
@@ -219,35 +229,40 @@ void debugMode(){
   }
 }
 
-void readinput(){
+void clr(){
+  memset(col,'\0',sizeof(col));
+}
+
+bool readinput(){
   selsize = Serial.available();
-  if (selsize > MAXSIZE){
-    for (int ii = 0; ii <= selsize; ii++) {
+  Serial.println(selsize);
+  if (selsize < MAXSIZE){
+    for (int ii = 0; ii < selsize; ii++) {
         col[ii] = Serial.read();
+        Serial.print(col[ii]);
     }
+    return true;
   }
   else{
     Serial.println(F("That was not a valid choice"));
+    for (int ii = 0; ii <= selsize; ii++){
+      Serial.read();
+    }
+    return false;
   }
 }
 
 void initRGB(){
-  Serial.println("Hello");
   char colo[3][10] = {"RED","GREEN","BLUE"};
   for (int jj = 0; jj < 3; jj++){
     colptr iter = head;
     while(iter->fptr != NULL){
       iter = iter->fptr;
-      Serial.println("Skip first");
+      delay(50);
     }
     colptr temp = new coltyp;
-    //int kk = 0;
-    delay(50);
-    for (int kk = 0; kk < 5; kk++){ 
-      temp->colName[kk] = colo[jj][kk];
-      Serial.println(temp->colName[kk]);
-    }
-    if(j == 0){
+    //delay(50);
+    if(jj == 0){
       temp->Rval = hi;
       temp->len  = 3;
     }
@@ -259,6 +274,12 @@ void initRGB(){
       temp->Bval = hi;
       temp->len  = 4;
     }
+    for (int kk = 0; kk <= temp->len; kk++){ 
+      temp->colName[kk] = colo[jj][kk];
+      //Serial.println(temp->colName[kk]);
+    }
+    //temp->colName[(temp->len)+1] = '\0';
+    //delay(200);
     if(jj > 0){
       iter->fptr = temp;
       temp->bptr = iter;
@@ -269,7 +290,6 @@ void initRGB(){
       iter = head;
     }
   }
-  delay(5000);
 }/*
 void checkEEPROM(){
   int ii = 0;
