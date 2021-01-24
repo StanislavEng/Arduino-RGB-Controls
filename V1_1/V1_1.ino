@@ -184,6 +184,7 @@ void loop() {
           delay(5000);
           rep = readinput();
         }
+        rep = false;
         Serial.println(col);
         if(strcmp(col,"yes")==0){
           Serial.println("This is correct");
@@ -199,11 +200,12 @@ void loop() {
         while (iter->fptr != NULL){
           iter = iter->fptr;
         }
-        clr();
+
         Serial.println(col);
         delay(200);
         Serial.println(msg2); // What is the name of this colour
         while(rep == false){
+          clr();
           while(Serial.available()==0){}
           delay(50);
           rep = readinput();
