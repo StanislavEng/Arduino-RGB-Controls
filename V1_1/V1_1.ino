@@ -12,7 +12,7 @@
 #define hi 252
 #define lo 0
 
-#define MAXSIZE 10
+#define MAXSIZE 12
 
 struct coltyp{
   char colName[MAXSIZE];
@@ -35,7 +35,7 @@ String msg1 = "Do you want to save this colour?";
 String msg2 = "What is the name of this colour?";
 String msg3 = "Entering debug mode";
 String msg4 = "Not a valid entry";
-char col[10];
+char col[MAXSIZE];
 int stater = 0;
 
 int stateg = 0;
@@ -100,8 +100,8 @@ void loop() {
     analogWrite(BLUEPWM,stateb);
   }
   else{
-    clr();
     do {
+      clr();
       Serial.println(msgg); // What RGB Value do you want
       while(rep == false){
         while(Serial.available()==0){}
@@ -111,51 +111,51 @@ void loop() {
       Serial.println(col);
       rep = false;
       if ((strcmp(col,"Red")==0) || (strcmp(col,"red")==0)){
-        if ((stater == 0 || stater < 252) && dirr == true){
+        if ((stater == lo || stater < hi) && dirr == true){
           stater = stater + incrm;
         }
-        else if (stater > 0 && dirr == false){
+        else if (stater > lo && dirr == false){
           stater = stater - incrm;
         }
-        else if (stater == 252 && dirr == true){
+        else if (stater == hi && dirr == true){
           dirr = false;
           stater = stater - incrm;
         }
-        else if (stater == 0 && dirr == false){
+        else if (stater == lo && dirr == false){
           dirr = true;
           stater = stater + incrm;
         }
         analogWrite(REDPWM,stater);
       }
       if ((strcmp(col,"Green")==0) || (strcmp(col,"green")==0)){
-        if (stateg < 252&& dirg == true){
+        if (stateg < hi && dirg == true){
           stateg = stateg + incrm;
         }
-        else if (stateg > 0 && dirg == false){
+        else if (stateg > lo && dirg == false){
           stateg = stateg - incrm;
         }
-        else if (stateg == 252 && dirg == true){
+        else if (stateg == hi && dirg == true){
           dirg = false;
           stateg = stateg - incrm;
         }
-        else if (stateg == 0 && dirg == false){
+        else if (stateg == lo && dirg == false){
           dirg = true;
           stateg = stateg + incrm;
         }
         analogWrite(GREENPWM,stateg);
        }
       if ((strcmp(col,"Blue")==0) || (strcmp(col,"blue")==0)){
-        if (stateb < 252 && dirb == true){
+        if (stateb < hi && dirb == true){
           stateb = stateb + incrm;
         }
-        else if (stateb > 0 && dirb == false){
+        else if (stateb > lo && dirb == false){
           stateb = stateb - incrm;
         }
-        else if (stateb == 252 && dirb == true){
+        else if (stateb == hi && dirb == true){
           dirb = false;
           stateb = stateb - incrm;
         }
-        else if (stateb == 0 && dirb == false){
+        else if (stateb == lo && dirb == false){
           dirb = true;
           stateb = stateb + incrm;
         }
@@ -170,19 +170,26 @@ void loop() {
       }
       rep = false;
     } while (!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0));
-      clr();
       Serial.print("Red is : ");
       Serial.print(stater);
       Serial.print(". Green is : ");
       Serial.print(stateg);
       Serial.print(". Blue is : ");
       Serial.println(stateb);
-      Serial.println(msg1); // DO you want to save this color
       do{
+        clr();
+        Serial.println(msg1); // DO you want to save this color
         while(rep == false){
           while(Serial.available()==0){}
-          delay(50);
+          delay(5000);
           rep = readinput();
+        }
+        Serial.println(col);
+        if(strcmp(col,"yes")==0){
+          Serial.println("This is correct");
+        }
+        else{
+          Serial.println("This is wrong");
         }
       }while(!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0) && !(strcmp(col,"No")==0) && !(strcmp(col,"no")==0));
       if((strcmp(col,"Yes")==0) || (strcmp(col,"yes")==0)){
@@ -193,14 +200,25 @@ void loop() {
           iter = iter->fptr;
         }
         clr();
+        Serial.println(col);
+        delay(200);
         Serial.println(msg2); // What is the name of this colour
         while(rep == false){
           while(Serial.available()==0){}
           delay(50);
           rep = readinput();
         }
+        Serial.println(F("Escaped"));
         //tosave.colName =  col;
         //temp->colName = tosave.colName;
+        strcpy(tosave.colName,col);
+        Serial.println(tosave.colName);
+        delay(200);
+        strcpy(temp->colName,tosave.colName);
+        Serial.println(temp->colName);
+        delay(200);
+        tosave.len = selsize;
+        temp->len = selsize;
         tosave.Rval = stater;
         tosave.Gval = stateg;
         tosave.Bval = stateb;
@@ -213,8 +231,10 @@ void loop() {
       }
       else{
       }
+      Serial.println(F("How far?"));
       delay(2*DELAYTIME);
   }
+    Serial.println(F("We were working earlier"));
     clr();
 }
 void debugMode(){
@@ -230,13 +250,13 @@ void debugMode(){
 }
 
 void clr(){
-  memset(col,'\0',sizeof(col));
+  memset(col,'\0',MAXSIZE);
 }
 
 bool readinput(){
   selsize = Serial.available();
   Serial.println(selsize);
-  if (selsize < MAXSIZE){
+  if (selsize <= MAXSIZE){
     for (int ii = 0; ii < selsize; ii++) {
         col[ii] = Serial.read();
         Serial.print(col[ii]);
