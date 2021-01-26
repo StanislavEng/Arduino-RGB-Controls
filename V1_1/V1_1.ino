@@ -28,13 +28,21 @@ typedef coltyp* colptr;
 
 coltyp base;
 colptr head = &base;
-String msg  = "What color do you want to access?";
-String msg0 = "0. None";
-String msgg = "What RGB value do you want to Change? Red, Green or Blue?";
-String msg1 = "Do you want to save this colour?";
-String msg2 = "What is the name of this colour?";
-String msg3 = "Entering debug mode";
-String msg4 = "Not a valid entry";
+//String msg  = "What color do you want to access?";
+char menu[] = "What color do you want to access?";
+//String msg0 = "0. None";
+char blnk[] = "0. None";
+//String msgg = "What RGB value do you want to Change? Red, Green or Blue?";
+char chg[] = "What RGB Values do you want to change? Red, Green, or Blue?";
+//String msg1 = "Do you want to save this colour?";
+char sav[] = "Do you want to save this colour?";
+//String msg2 = "What is the name of this colour?";
+char nam[] = "What is the name of this colour?";
+//String msg3 = "Entering debug mode";
+char debug[] = "Entering debug mode";
+//String msg4 = "Not a valid entry";
+char invalid[] = "Not a valid entry";
+char myTmp[] = "Last known state";
 char col[MAXSIZE];
 int stater = 0;
 
@@ -65,9 +73,9 @@ void loop() {
   // put your main code here, to run repeatedly:
   j = 1;
   //debugMode();
-  Serial.println(msg); // Main Menu Message basically 
+  Serial.println(menu); // Main Menu Message basically 
   colptr iter = head;
-  Serial.println(msg0); // Skip option
+  Serial.println(blnk); // Skip option
   while(iter != NULL){
     Serial.print(j);
     Serial.print(F(". "));
@@ -102,7 +110,7 @@ void loop() {
   else{
     do {
       clr();
-      Serial.println(msgg); // What RGB Value do you want
+      Serial.println(chg); // What RGB Value do you want
       while(rep == false){
         while(Serial.available()==0){}
         delay(50);
@@ -178,20 +186,20 @@ void loop() {
       Serial.println(stateb);
       do{
         clr();
-        Serial.println(msg1); // DO you want to save this color
+        Serial.println(sav); // DO you want to save this color
         while(rep == false){
           while(Serial.available()==0){}
           delay(5000);
           rep = readinput();
         }
         rep = false;
-        Serial.println(col);
+        /*Serial.println(col);
         if(strcmp(col,"yes")==0){
           Serial.println("This is correct");
         }
         else{
           Serial.println("This is wrong");
-        }
+        }*/
       }while(!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0) && !(strcmp(col,"No")==0) && !(strcmp(col,"no")==0));
       if((strcmp(col,"Yes")==0) || (strcmp(col,"yes")==0)){
         colptr temp = new coltyp;
@@ -201,42 +209,54 @@ void loop() {
           iter = iter->fptr;
         }
 
-        Serial.println(col);
+        //Serial.println(col);
         delay(200);
-        Serial.println(msg2); // What is the name of this colour
+        Serial.println(nam); // What is the name of this colour
         while(rep == false){
           clr();
           while(Serial.available()==0){}
           delay(50);
           rep = readinput();
         }
-        Serial.println(F("Escaped"));
+        //Serial.println(F("Escaped"));
         //tosave.colName =  col;
         //temp->colName = tosave.colName;
         strcpy(tosave.colName,col);
-        Serial.println(tosave.colName);
+        //Serial.println(tosave.colName);
         delay(200);
         strcpy(temp->colName,tosave.colName);
-        Serial.println(temp->colName);
+        //Serial.println(temp->colName);
         delay(200);
         tosave.len = selsize;
-        temp->len = selsize;
+        //temp->len = selsize;
         tosave.Rval = stater;
         tosave.Gval = stateg;
         tosave.Bval = stateb;
-        temp->Rval = tosave.Rval;
-        temp->Gval = tosave.Gval;
-        temp->Bval = tosave.Bval;
-        temp->bptr = iter;
+        //temp->Rval = tosave.Rval;
+        //temp->Gval = tosave.Gval;
+        //temp->Bval = tosave.Bval;
+        //temp->bptr = iter;
+        temp = &tosave;
         iter->fptr = temp;
+        temp->bptr = iter;
         iter = temp;
+        ////////////////// EEPROM //////////////////
+        EEPROM.put(eeAddress, tosave);
+        
       }
       else{
+        EEPROM.put(eeAddress,myTmp);
+        eeAddress += sizeof myTmp;
+        EEPROM.put(eeAddress,stater);
+        eeAddress += sizeof(int);
+        EEPROM.put(eeAddress,stater);
+        eeAddress += sizeof(int);        
+        EEPROM.put(eeAddress,stater);
       }
-      Serial.println(F("How far?"));
+      //Serial.println(F("How far?"));
       delay(2*DELAYTIME);
   }
-    Serial.println(F("We were working earlier"));
+    //Serial.println(F("We were working earlier"));
     clr();
 }
 void debugMode(){
@@ -266,7 +286,7 @@ bool readinput(){
     return true;
   }
   else{
-    Serial.println(F("That was not a valid choice"));
+    Serial.println(invalid);
     for (int ii = 0; ii <= selsize; ii++){
       Serial.read();
     }
@@ -343,7 +363,7 @@ void checkEEPROM(){
     Serial.println("def wrong");
   }
 }*/
-/*
+
 void myEEPROM(){
   coltyp test;
   EEPROM.get(0,test);
@@ -353,4 +373,4 @@ void myEEPROM(){
   Serial.println(test.Gval);
   Serial.println(test.Bval);
   //return;
-}*/
+}
