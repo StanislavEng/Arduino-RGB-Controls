@@ -63,7 +63,7 @@ void setup() {
   pinMode(BLUEPWM,OUTPUT);
   while (!Serial) {}
   initRGB();
-  //checkEEPROM();
+  checkEEPROM();
   //myEEPROM();
 }
 
@@ -73,6 +73,7 @@ void loop() {
   // put your main code here, to run repeatedly:
   j = 1;
   //debugMode();
+  //myEEPROM();
   Serial.println(menu); // Main Menu Message basically 
   colptr iter = head;
   Serial.println(blnk); // Skip option
@@ -189,7 +190,7 @@ void loop() {
         Serial.println(sav); // DO you want to save this color
         while(rep == false){
           while(Serial.available()==0){}
-          delay(5000);
+          delay(1000);
           rep = readinput();
         }
         rep = false;
@@ -224,7 +225,7 @@ void loop() {
         strcpy(tosave.colName,col);
         //Serial.println(tosave.colName);
         delay(200);
-        strcpy(temp->colName,tosave.colName);
+        //strcpy(temp->colName,tosave.colName);
         //Serial.println(temp->colName);
         delay(200);
         tosave.len = selsize;
@@ -272,6 +273,9 @@ void debugMode(){
 }
 
 void clr(){
+  //for (int ii = 0; ii < MAXSIZE; ii++){
+    //col[ii] = '\0';
+  //}
   memset(col,'\0',MAXSIZE);
 }
 
@@ -332,37 +336,57 @@ void initRGB(){
       iter = head;
     }
   }
-}/*
+}
 void checkEEPROM(){
-  int ii = 0;
+  //int ii = 0;
   //String testname;
-  colptr test = new coltyp;
+  coltyp test;
   EEPROM.get(0,test);
-  if (test == 0){
-    Serial.println("Right");
+  delay(500);
+  Serial.println(test.colName);
+  Serial.print(F("Red: "));
+  Serial.println(test.Rval);
+  Serial.print(F("Green: "));
+  Serial.println(test.Gval);
+  Serial.print(F("Blue: "));
+  Serial.println(test.Bval);
+  if (strcmp(test.colName,"") == 0){
+    Serial.println("Wrong");
   }
-  else {//if((test->colName.length() > 0) ){
-    byte red   = test->Rval;
-    byte green = test->Gval;
-    byte blue  = test->Bval;
-    analogWrite(REDPWM   , red);
-    analogWrite(GREENPWM , green);
-    analogWrite(BLUEPWM  , blue);
-    Serial.println("Worded reboot");
-  }/*
+  else if((strcmp(test.colName, myTmp))==0){
+    Serial.println(F("This should skip"));
+    /*byte red   = test.Rval;
+    byte green = test.Gval;
+    byte blue  = test.Bval;*/
+    analogWrite(REDPWM   , test.Rval);
+    analogWrite(GREENPWM , test.Gval);
+    analogWrite(BLUEPWM  , test.Bval);
+    Serial.println(test.colName);
+  }
   else {
+    Serial.println(F("This is right"));
     colptr iter = head;
-    while(iter->fptr != NULL){
+    colptr temp = new coltyp;
+    temp = &test;
+    while (iter->fptr != NULL){
+      Serial.println(iter->colName);
       iter = iter->fptr;
     }
-    iter->fptr = test;
-    test->bptr = iter;
-    analogWrite(REDPWM   ,test->Rval);
-    analogWrite(GREENPWM ,test->Gval);
-    analogWrite(BLUEPWM  ,test->Bval);
-    Serial.println("def wrong");
+    iter->fptr = temp;
+    temp->bptr = iter;
+    analogWrite(REDPWM   ,temp->Rval);
+    analogWrite(GREENPWM ,temp->Gval);
+    analogWrite(BLUEPWM  ,temp->Bval);
+    Serial.println(temp->colName);
+    iter = temp;
+    delay(100);
+    iter = head;
+    while(iter != NULL){
+      Serial.println(iter->colName);
+      iter = iter->fptr;
+    }
   }
-}*/
+}
 
 void myEEPROM(){
   coltyp test;
