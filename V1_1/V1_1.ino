@@ -44,10 +44,10 @@ char debug[] = "Entering debug mode";
 char invalid[] = "Not a valid entry";
 char myTmp[] = "Last known state";
 char col[MAXSIZE];
-int stater = 0;
 
-int stateg = 0;
-int stateb = 0;
+byte stater = 0;
+byte stateg = 0;
+byte stateb = 0;
 bool dirr = true;
 bool dirg = true;
 bool dirb = true;
@@ -248,10 +248,14 @@ void loop() {
       else{
         EEPROM.put(eeAddress,myTmp);
         eeAddress += sizeof myTmp;
+        Serial.println(eeAddress);
+        delay(50);
+        Serial.println(stater);
         EEPROM.put(eeAddress,stater);
-        eeAddress += sizeof(int);
+        eeAddress += sizeof(byte);
+        delay(50);
         EEPROM.put(eeAddress,stater);
-        eeAddress += sizeof(int);        
+        eeAddress += sizeof(byte);        
         EEPROM.put(eeAddress,stater);
       }
       //Serial.println(F("How far?"));
