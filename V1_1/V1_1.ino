@@ -51,7 +51,7 @@ byte stateb = 0;
 bool dirr = true;
 bool dirg = true;
 bool dirb = true;
-int incrm = 63;
+byte incrm = 63;
 int j=0;
 int selsize;
 
@@ -70,6 +70,8 @@ void setup() {
 void loop() {
   int eeAddress = 0;
   bool rep = false;
+  Serial.println(eeAddress);
+  Serial.println(rep);
   // put your main code here, to run repeatedly:
   j = 1;
   //debugMode();
@@ -204,7 +206,7 @@ void loop() {
       }while(!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0) && !(strcmp(col,"No")==0) && !(strcmp(col,"no")==0));
       if((strcmp(col,"Yes")==0) || (strcmp(col,"yes")==0)){
         colptr temp = new coltyp;
-        coltyp tosave; 
+        coltyp tosave;
         colptr iter = head;
         while (iter->fptr != NULL){
           iter = iter->fptr;
@@ -222,27 +224,34 @@ void loop() {
         //Serial.println(F("Escaped"));
         //tosave.colName =  col;
         //temp->colName = tosave.colName;
-        strcpy(tosave.colName,col);
+        //strcpy(tosave.colName,col);
+        strcpy(temp->colName,col);
         //Serial.println(tosave.colName);
         delay(200);
         //strcpy(temp->colName,tosave.colName);
         //Serial.println(temp->colName);
         delay(200);
-        tosave.len = selsize;
-        //temp->len = selsize;
-        tosave.Rval = stater;
-        tosave.Gval = stateg;
-        tosave.Bval = stateb;
+        //tosave.len = selsize;
+        temp->len = selsize;
+        //tosave.Rval = stater;
+        //tosave.Gval = stateg;
+        //tosave.Bval = stateb;
         //temp->Rval = tosave.Rval;
         //temp->Gval = tosave.Gval;
         //temp->Bval = tosave.Bval;
+        temp->Rval = stater;
+        temp->Gval = stateg;
+        temp->Bval = stateb;
         //temp->bptr = iter;
-        temp = &tosave;
+        //temp = &tosave;
+        //iter->fptr = tosave;
+        //tosave.bptr = iter;
         iter->fptr = temp;
         temp->bptr = iter;
         iter = temp;
+        tosave = &temp;
         ////////////////// EEPROM //////////////////
-        EEPROM.put(eeAddress, tosave);
+        EEPROM.put(eeAddress, iter);
         
       }
       else{
@@ -355,10 +364,18 @@ void checkEEPROM(){
   Serial.print(F("Blue: "));
   Serial.println(test.Bval);
   if (strcmp(test.colName,"") == 0){
-    Serial.println("Wrong");
+    Serial.println("Nothing Saved");
   }
   else if((strcmp(test.colName, myTmp))==0){
+    int eeAddress = 0;
     Serial.println(F("This should skip"));
+    EEPROM.get(eeAddress,test.colName);
+    eeAddress += sizeof test.colName; 
+    EEPROM.get(eeAddress,test.Rval);
+    eeAddress += sizeof(byte);
+    EEPROM.get(eeAddress,test.Gval);
+    eeAddress += sizeof(byte);
+    EEPROM.get(eeAddress,test.Bval); 
     /*byte red   = test.Rval;
     byte green = test.Gval;
     byte blue  = test.Bval;*/
