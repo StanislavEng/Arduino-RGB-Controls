@@ -63,7 +63,7 @@ void setup() {
   pinMode(BLUEPWM,OUTPUT);
   while (!Serial) {}
   initRGB();
-  checkEEPROM();
+  //checkEEPROM();
   //myEEPROM();
 }
 
@@ -249,12 +249,12 @@ void loop() {
         iter->fptr = temp;
         temp->bptr = iter;
         iter = temp;
-        tosave = &temp;
+        tosave = *temp;
         ////////////////// EEPROM //////////////////
-        EEPROM.put(eeAddress, iter);
+        //EEPROM.put(eeAddress, iter);
         
       }
-      else{
+      else{/*
         EEPROM.put(eeAddress,myTmp);
         eeAddress += sizeof myTmp;
         Serial.println(eeAddress);
@@ -265,7 +265,7 @@ void loop() {
         delay(50);
         EEPROM.put(eeAddress,stater);
         eeAddress += sizeof(byte);        
-        EEPROM.put(eeAddress,stater);
+        EEPROM.put(eeAddress,stater);*/
       }
       //Serial.println(F("How far?"));
       delay(2*DELAYTIME);
@@ -370,7 +370,7 @@ void checkEEPROM(){
     int eeAddress = 0;
     Serial.println(F("This should skip"));
     EEPROM.get(eeAddress,test.colName);
-    eeAddress += sizeof test.colName; 
+    eeAddress += sizeof myTmp; 
     EEPROM.get(eeAddress,test.Rval);
     eeAddress += sizeof(byte);
     EEPROM.get(eeAddress,test.Gval);
