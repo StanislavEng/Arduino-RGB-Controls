@@ -63,13 +63,14 @@ void setup() {
   pinMode(BLUEPWM,OUTPUT);
   while (!Serial) {}
   initRGB();
-  //checkEEPROM();
+  checkEEPROM();
   //myEEPROM();
 }
 
 void loop() {
   int eeAddress = 0;
   bool rep = false;
+  Serial.println(F("Here"));
   Serial.println(eeAddress);
   Serial.println(rep);
   // put your main code here, to run repeatedly:
@@ -251,10 +252,11 @@ void loop() {
         iter = temp;
         tosave = *temp;
         ////////////////// EEPROM //////////////////
-        //EEPROM.put(eeAddress, iter);
+        EEPROM.put(eeAddress, *temp);
         
       }
-      else{/*
+      else{
+        eeAddress = 0;
         EEPROM.put(eeAddress,myTmp);
         eeAddress += sizeof myTmp;
         Serial.println(eeAddress);
@@ -263,9 +265,9 @@ void loop() {
         EEPROM.put(eeAddress,stater);
         eeAddress += sizeof(byte);
         delay(50);
-        EEPROM.put(eeAddress,stater);
+        EEPROM.put(eeAddress,stateg);
         eeAddress += sizeof(byte);        
-        EEPROM.put(eeAddress,stater);*/
+        EEPROM.put(eeAddress,stateb);
       }
       //Serial.println(F("How far?"));
       delay(2*DELAYTIME);
@@ -344,7 +346,7 @@ void initRGB(){
       temp->bptr = iter;
       iter = temp;
     }
-    else{
+  else{
       head = temp;
       iter = head;
     }
@@ -411,11 +413,22 @@ void checkEEPROM(){
 
 void myEEPROM(){
   coltyp test;
-  EEPROM.get(0,test);
+  //EEPROM.get(0,test);
+  int eeAddress = 0;
+  Serial.println(F("This should skip"));
+  EEPROM.get(eeAddress,test.colName);
+  eeAddress += sizeof myTmp; 
+  EEPROM.get(eeAddress,test.Rval);
+  eeAddress += sizeof(byte);
+  EEPROM.get(eeAddress,test.Gval);
+  eeAddress += sizeof(byte);
+  EEPROM.get(eeAddress,test.Bval); 
   delay(500);
+  Serial.println(F("Hello"));
   Serial.println(test.colName);
   Serial.println(test.Rval);
   Serial.println(test.Gval);
   Serial.println(test.Bval);
+  
   //return;
 }
