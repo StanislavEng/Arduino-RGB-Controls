@@ -28,19 +28,12 @@ typedef coltyp* colptr;
 
 coltyp base;
 colptr head = &base;
-//String msg  = "What color do you want to access?";
 char menu[] = "What color do you want to access?";
-//String msg0 = "0. None";
 char blnk[] = "0. None";
-//String msgg = "What RGB value do you want to Change? Red, Green or Blue?";
 char chg[] = "What RGB Values do you want to change? Red, Green, or Blue?";
-//String msg1 = "Do you want to save this colour?";
 char sav[] = "Do you want to save this colour?";
-//String msg2 = "What is the name of this colour?";
 char nam[] = "What is the name of this colour?";
-//String msg3 = "Entering debug mode";
 char debug[] = "Entering debug mode";
-//String msg4 = "Not a valid entry";
 char invalid[] = "Not a valid entry";
 char myTmp[] = "Last known state";
 char col[MAXSIZE];
@@ -70,13 +63,8 @@ void setup() {
 void loop() {
   int eeAddress = 0;
   bool rep = false;
-  Serial.println(F("Here"));
-  Serial.println(eeAddress);
-  Serial.println(rep);
   // put your main code here, to run repeatedly:
   j = 1;
-  //debugMode();
-  //myEEPROM();
   Serial.println(menu); // Main Menu Message basically 
   colptr iter = head;
   Serial.println(blnk); // Skip option
@@ -98,8 +86,6 @@ void loop() {
 
   while (iter != NULL && !(strcmp(iter->colName,col)==0)){
     iter = iter->fptr;
-    //Serial.println(iter->colName);
-    //Serial.println(col);
     delay(200);
   }
   
@@ -139,7 +125,7 @@ void loop() {
         }
         analogWrite(REDPWM,stater);
       }
-      if ((strcmp(col,"Green")==0) || (strcmp(col,"green")==0)){
+      else if ((strcmp(col,"Green")==0) || (strcmp(col,"green")==0)){
         if (stateg < hi && dirg == true){
           stateg = stateg + incrm;
         }
@@ -156,7 +142,7 @@ void loop() {
         }
         analogWrite(GREENPWM,stateg);
        }
-      if ((strcmp(col,"Blue")==0) || (strcmp(col,"blue")==0)){
+      else if ((strcmp(col,"Blue")==0) || (strcmp(col,"blue")==0)){
         if (stateb < hi && dirb == true){
           stateb = stateb + incrm;
         }
@@ -173,6 +159,10 @@ void loop() {
         }
         analogWrite(BLUEPWM,stateb);
       }
+    else {
+      Serial.println(F("That was not a valid choice"));
+      rep = true;
+    }
       clr();
       Serial.println(F("Are you happy with this color?"));
       while(rep == false){
@@ -193,17 +183,10 @@ void loop() {
         Serial.println(sav); // DO you want to save this color
         while(rep == false){
           while(Serial.available()==0){}
-          delay(1000);
+          delay(100);
           rep = readinput();
         }
         rep = false;
-        /*Serial.println(col);
-        if(strcmp(col,"yes")==0){
-          Serial.println("This is correct");
-        }
-        else{
-          Serial.println("This is wrong");
-        }*/
       }while(!(strcmp(col,"Yes")==0) && !(strcmp(col,"yes")==0) && !(strcmp(col,"No")==0) && !(strcmp(col,"no")==0));
       if((strcmp(col,"Yes")==0) || (strcmp(col,"yes")==0)){
         colptr temp = new coltyp;
@@ -212,8 +195,6 @@ void loop() {
         while (iter->fptr != NULL){
           iter = iter->fptr;
         }
-
-        //Serial.println(col);
         delay(200);
         Serial.println(nam); // What is the name of this colour
         while(rep == false){
@@ -222,31 +203,12 @@ void loop() {
           delay(50);
           rep = readinput();
         }
-        //Serial.println(F("Escaped"));
-        //tosave.colName =  col;
-        //temp->colName = tosave.colName;
-        //strcpy(tosave.colName,col);
         strcpy(temp->colName,col);
-        //Serial.println(tosave.colName);
         delay(200);
-        //strcpy(temp->colName,tosave.colName);
-        //Serial.println(temp->colName);
-        delay(200);
-        //tosave.len = selsize;
         temp->len = selsize;
-        //tosave.Rval = stater;
-        //tosave.Gval = stateg;
-        //tosave.Bval = stateb;
-        //temp->Rval = tosave.Rval;
-        //temp->Gval = tosave.Gval;
-        //temp->Bval = tosave.Bval;
         temp->Rval = stater;
         temp->Gval = stateg;
         temp->Bval = stateb;
-        //temp->bptr = iter;
-        //temp = &tosave;
-        //iter->fptr = tosave;
-        //tosave.bptr = iter;
         iter->fptr = temp;
         temp->bptr = iter;
         iter = temp;
@@ -259,20 +221,22 @@ void loop() {
         eeAddress = 0;
         EEPROM.put(eeAddress,myTmp);
         eeAddress += sizeof myTmp;
-        Serial.println(eeAddress);
         delay(50);
-        Serial.println(stater);
         EEPROM.put(eeAddress,stater);
         eeAddress += sizeof(byte);
         delay(50);
         EEPROM.put(eeAddress,stateg);
         eeAddress += sizeof(byte);        
         EEPROM.put(eeAddress,stateb);
+        // literally wipes the list if I don't add this 
+        colptr iter = head; 
+        while (iter->fptr != NULL){
+        iter = iter->fptr;
+        ////////////////////////////////////////////
+        }
       }
-      //Serial.println(F("How far?"));
       delay(2*DELAYTIME);
   }
-    //Serial.println(F("We were working earlier"));
     clr();
 }
 void debugMode(){
@@ -296,11 +260,9 @@ void clr(){
 
 bool readinput(){
   selsize = Serial.available();
-  Serial.println(selsize);
   if (selsize <= MAXSIZE){
     for (int ii = 0; ii < selsize; ii++) {
         col[ii] = Serial.read();
-        Serial.print(col[ii]);
     }
     return true;
   }
@@ -337,10 +299,7 @@ void initRGB(){
     }
     for (int kk = 0; kk <= temp->len; kk++){ 
       temp->colName[kk] = colo[jj][kk];
-      //Serial.println(temp->colName[kk]);
     }
-    //temp->colName[(temp->len)+1] = '\0';
-    //delay(200);
     if(jj > 0){
       iter->fptr = temp;
       temp->bptr = iter;
@@ -353,24 +312,14 @@ void initRGB(){
   }
 }
 void checkEEPROM(){
-  //int ii = 0;
-  //String testname;
   coltyp test;
   EEPROM.get(0,test);
   delay(500);
-  Serial.println(test.colName);
-  Serial.print(F("Red: "));
-  Serial.println(test.Rval);
-  Serial.print(F("Green: "));
-  Serial.println(test.Gval);
-  Serial.print(F("Blue: "));
-  Serial.println(test.Bval);
   if (strcmp(test.colName,"") == 0){
     Serial.println("Nothing Saved");
   }
   else if((strcmp(test.colName, myTmp))==0){
     int eeAddress = 0;
-    Serial.println(F("This should skip"));
     EEPROM.get(eeAddress,test.colName);
     eeAddress += sizeof myTmp; 
     EEPROM.get(eeAddress,test.Rval);
@@ -378,21 +327,16 @@ void checkEEPROM(){
     EEPROM.get(eeAddress,test.Gval);
     eeAddress += sizeof(byte);
     EEPROM.get(eeAddress,test.Bval); 
-    /*byte red   = test.Rval;
-    byte green = test.Gval;
-    byte blue  = test.Bval;*/
     analogWrite(REDPWM   , test.Rval);
     analogWrite(GREENPWM , test.Gval);
     analogWrite(BLUEPWM  , test.Bval);
-    Serial.println(test.colName);
+    Serial.println(myTmp);
   }
   else {
-    Serial.println(F("This is right"));
     colptr iter = head;
     colptr temp = new coltyp;
     temp = &test;
     while (iter->fptr != NULL){
-      Serial.println(iter->colName);
       iter = iter->fptr;
     }
     iter->fptr = temp;
@@ -400,12 +344,10 @@ void checkEEPROM(){
     analogWrite(REDPWM   ,temp->Rval);
     analogWrite(GREENPWM ,temp->Gval);
     analogWrite(BLUEPWM  ,temp->Bval);
-    Serial.println(temp->colName);
     iter = temp;
     delay(100);
     iter = head;
     while(iter != NULL){
-      Serial.println(iter->colName);
       iter = iter->fptr;
     }
   }
