@@ -11,18 +11,18 @@ them for later.
 My Friend made the comparison to some of the LED lights you can see as cars which prompted me to 
 create a dedicated repository and make more versions.
 
-##Version 1: Standard (in Serial atm) user input and printed values. Uses linked lists for finding
+## Version 1: Standard (in Serial atm) user input and printed values. Uses linked lists for finding
 desired colors, as well as the option to change RGB values by the color in +/-63 bit values.\ 
-###TODO?: Lower the change value for more precise changing\
-###TODO: Add in loop to allow you to change values until you're happy with it without starting from top\
-###TODO: Add in TO END feature for RGB to go from 0 to 255 or vice versa immediately 
+### TODO?: Lower the change value for more precise changing\
+### TODO: Add in loop to allow you to change values until you're happy with it without starting from top\
+### TODO: Add in TO END feature for RGB to go from 0 to 255 or vice versa immediately 
 
-##Version 2: Adding potentiometer for more precise control of RGB values\
-###TODO: Add in pot ;) 
+## Version 2: Adding potentiometer for more precise control of RGB values\
+### TODO: Add in pot ;) 
 
-##Version 3: Adding in DIPSWITCH or something to switch from dev mode to user mode, as well as use other
+## Version 3: Adding in DIPSWITCH or something to switch from dev mode to user mode, as well as use other
 buttons to switch between changing R,G or B values.\
-###TODO: start it
+### TODO: start it
 
 
 
@@ -32,8 +32,8 @@ buttons to switch between changing R,G or B values.\
 
 
 
-###TODO: Create some sort of scrolling feature to reduce how many get shown at a time for better
+### TODO: Create some sort of scrolling feature to reduce how many get shown at a time for better
 legibility. \
-###~TODO: Add in EEPROM writing to save data in case you reset Arduino~ got it\
-###TODO?: Some sort of output such as LCD screens so you don't need to use Arduino IDE(?) Serial\
-##LOOKAT: Seeing if I can find some sort of lower tech way or something to save RGB values without EEPROM
+### ~TODO: Add in EEPROM writing to save data in case you reset Arduino~ got it\
+### TODO?: Some sort of output such as LCD screens so you don't need to use Arduino IDE(?) Serial\
+### LOOKAT: Seeing if I can find some sort of lower tech way or something to save RGB values without EEPROM
