@@ -13,8 +13,8 @@ create a dedicated repository and make more versions.
 
 ## Version 1: Standard (in Serial atm) user input and printed values. Uses linked lists for finding
 desired colors, as well as the option to change RGB values by the color in +/-63 bit values.
-### TODO?: Lower the change value for more precise changing\
-### TODO: Add in loop to allow you to change values until you're happy with it without starting from top\
+### TODO?: Lower the change value for more precise changing
+### TODO: Add in loop to allow you to change values until you're happy with it without starting from top
 ### TODO: Add in TO END feature for RGB to go from 0 to 255 or vice versa immediately 
 
 ## Version 2: Adding potentiometer for more precise control of RGB values
